@@ -8,16 +8,16 @@ Patient* InputPatient()
     Patient* patient = new Patient;
 
     cout << "Введите фамилию: ";
-    getline(cin, patient->lastName);
+    cin.getline(patient->lastName, MAX_NAME_LENGTH);
 
     cout << "Введите имя: ";
-    getline(cin, patient->firstName);
+    cin.getline(patient->firstName, MAX_NAME_LENGTH);
 
     cout << "Введите отчество: ";
-    getline(cin, patient->patronymic);
+    cin.getline(patient->patronymic, MAX_NAME_LENGTH);
 
     cout << "Введите домашний адрес: ";
-    getline(cin, patient->address);
+    cin.getline(patient->address, MAX_ADDRESS_LENGTH);
 
     cout << "Введите номер медицинской карты: ";
     cin >> patient->medicalCardNumber;
@@ -30,54 +30,31 @@ Patient* InputPatient()
     return patient;
 }
 
-// Вспомогательная функция для записи строки в файл
-static void WriteStringToFile(ofstream& file, const string& str) {
-    size_t size = str.length();
-    file.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    file.write(str.c_str(), static_cast<std::streamsize>(size));
-}
-
 // Функция записи данных пациента в бинарный файл
 void WritePatient(ofstream& file, const Patient& patient)
 {
-    WriteStringToFile(file, patient.lastName);
-    WriteStringToFile(file, patient.firstName);
-    WriteStringToFile(file, patient.patronymic);
-    WriteStringToFile(file, patient.address);
-
+    file.write(patient.lastName, MAX_NAME_LENGTH);
+    file.write(patient.firstName, MAX_NAME_LENGTH);
+    file.write(patient.patronymic, MAX_NAME_LENGTH);
+    file.write(patient.address, MAX_ADDRESS_LENGTH);
     file.write(reinterpret_cast<const char*>(&patient.medicalCardNumber), sizeof(patient.medicalCardNumber));
     file.write(reinterpret_cast<const char*>(&patient.insuranceNumber), sizeof(patient.insuranceNumber));
-}
-
-// Вспомогательная функция для чтения строки из файла
-static bool ReadStringFromFile(ifstream& file, string& str) {
-    size_t size = 0;
-    if (!file.read(reinterpret_cast<char*>(&size), sizeof(size))) {
-        return false;
-    }
-    str.resize(size);
-    if (size > 0) {
-        file.read(str.data(), static_cast<std::streamsize>(size));
-    }
-    return true;
 }
 
 // Функция чтения данных пациента из бинарного файла
 bool ReadPatient(ifstream& file, Patient& patient)
 {
-    if (!ReadStringFromFile(file, patient.lastName)) return false;
-    if (!ReadStringFromFile(file, patient.firstName)) return false;
-    if (!ReadStringFromFile(file, patient.patronymic)) return false;
-    if (!ReadStringFromFile(file, patient.address)) return false;
-
+    if (!file.read(patient.lastName, MAX_NAME_LENGTH)) return false;
+    if (!file.read(patient.firstName, MAX_NAME_LENGTH)) return false;
+    if (!file.read(patient.patronymic, MAX_NAME_LENGTH)) return false;
+    if (!file.read(patient.address, MAX_ADDRESS_LENGTH)) return false;
     if (!file.read(reinterpret_cast<char*>(&patient.medicalCardNumber), sizeof(patient.medicalCardNumber))) return false;
     if (!file.read(reinterpret_cast<char*>(&patient.insuranceNumber), sizeof(patient.insuranceNumber))) return false;
-
     return true;
 }
 
 // Функция создания файла с начальными данными (3 пациента)
-bool CreateInitialFile(const string& filename)
+bool CreateInitialFile(const char* filename)
 {
     ofstream file(filename, ios::binary);
     if (!file.is_open())
@@ -103,7 +80,7 @@ bool CreateInitialFile(const string& filename)
 }
 
 // Функция вывода содержимого файла на экран
-void PrintFile(const string& filename)
+void PrintFile(const char* filename)
 {
     ifstream file(filename, ios::binary);
     if (!file.is_open())
@@ -140,9 +117,9 @@ void PrintFile(const string& filename)
 }
 
 // Функция удаления пациента по номеру медицинской карты
-bool DeletePatient(const string& filename, int medicalCardNumber)
+bool DeletePatient(const char* filename, int medicalCardNumber)
 {
-    string tempFilename = "temp.dat";
+    const char* tempFilename = "temp.dat";
     ifstream inFile(filename, ios::binary);
     ofstream outFile(tempFilename, ios::binary);
 
@@ -170,11 +147,13 @@ bool DeletePatient(const string& filename, int medicalCardNumber)
     inFile.close();
     outFile.close();
 
-    if (remove(filename.c_str()) != 0) {
+    if (remove(filename) != 0)
+    {
         cerr << "Ошибка при удалении исходного файла " << filename << endl;
         return false;
     }
-    if (rename(tempFilename.c_str(), filename.c_str()) != 0) {
+    if (rename(tempFilename, filename) != 0)
+    {
         cerr << "Ошибка при переименовании временного файла в " << filename << endl;
         return false;
     }
@@ -183,9 +162,9 @@ bool DeletePatient(const string& filename, int medicalCardNumber)
 }
 
 // Функция добавления двух пациентов в начало файла
-bool AddTwoPatientsToStart(const string& filename)
+bool AddTwoPatientsToStart(const char* filename)
 {
-    string tempFilename = "temp.dat";
+    const char* tempFilename = "temp.dat";
     ofstream tempFile(tempFilename, ios::binary);
     if (!tempFile.is_open())
     {
@@ -223,11 +202,13 @@ bool AddTwoPatientsToStart(const string& filename)
     }
 
     tempFile.close();
-    if (remove(filename.c_str()) != 0) {
+    if (remove(filename) != 0)
+    {
         cerr << "Ошибка при удалении исходного файла " << filename << endl;
         return false;
     }
-    if (rename(tempFilename.c_str(), filename.c_str()) != 0) {
+    if (rename(tempFilename, filename) != 0)
+    {
         cerr << "Ошибка при переименовании временного файла в " << filename << endl;
         return false;
     }

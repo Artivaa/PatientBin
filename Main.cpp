@@ -4,8 +4,8 @@ int main()
 {
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
- 
-    const string filename = "patients.dat";
+
+    const char* filename = "patients.dat";
 
     // Создание файла с начальными данными
     if (!CreateInitialFile(filename))
@@ -16,23 +16,23 @@ int main()
 
     // Удаление пациента по номеру медицинской карты
     int cardToDelete;
-    cout << "\nВведите номер медицинской карты для удаления: ";
-    cin >> cardToDelete;
+    std::cout << "\nВведите номер медицинской карты для удаления: ";
+    std::cin >> cardToDelete;
 
     if (DeletePatient(filename, cardToDelete))
     {
-        cout << "Пациент успешно удален\n";
+        std::cout << "Пациент успешно удален\n";
     }
     else
     {
-        cout << "Пациент с таким номером карты не найден\n";
+        std::cout << "Пациент с таким номером карты не найден\n";
     }
     PrintFile(filename);
 
     // Добавление двух новых пациентов в начало
     if (AddTwoPatientsToStart(filename))
     {
-        cout << "Два пациента успешно добавлены в начало файла\n";
+        std::cout << "Два пациента успешно добавлены в начало файла\n";
     }
     PrintFile(filename);
 
