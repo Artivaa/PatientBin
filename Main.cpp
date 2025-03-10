@@ -1,5 +1,7 @@
 #include "Patient.h"
 
+using namespace std;
+
 int main()
 {
     SetConsoleOutputCP(CP_UTF8);
@@ -16,23 +18,23 @@ int main()
 
     // Удаление пациента по номеру медицинской карты
     int cardToDelete;
-    std::cout << "\nВведите номер медицинской карты для удаления: ";
-    std::cin >> cardToDelete;
+    cout << "\nВведите номер медицинской карты для удаления: ";
+    cin >> cardToDelete;
 
     if (DeletePatient(filename, cardToDelete))
     {
-        std::cout << "Пациент успешно удален\n";
+       cout << "Пациент успешно удален\n";
     }
     else
     {
-        std::cout << "Пациент с таким номером карты не найден\n";
+        cout << "Пациент с таким номером карты не найден\n";
     }
     PrintFile(filename);
 
     // Добавление двух новых пациентов в начало
     if (AddTwoPatientsToStart(filename))
     {
-        std::cout << "Два пациента успешно добавлены в начало файла\n";
+        cout << "Два пациента успешно добавлены в начало файла\n";
     }
     PrintFile(filename);
 
